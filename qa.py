@@ -8,13 +8,10 @@ import dotenv
 import streamlit as st
 import openai
 from langchain_openai import OpenAI
-from langchain_community.chat_models import ChatOpenAI
 from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter 
 from langchain_openai import OpenAIEmbeddings
 from langchain_community.vectorstores import Chroma
-from langchain.chains import RetrievalQA
-from langchain.chains.qa_with_sources import load_qa_with_sources_chain
 from langchain.chains import ConversationalRetrievalChain
 
 # api key
@@ -39,11 +36,12 @@ st.title('Q&A PDF files')
 # model
 llm = OpenAI(temperature=0)
 retriever = vector_store.as_retriever()
-chain = RetrievalQA.from_chain_type(llm, retriever=retriever)
-# chain = load_qa_with_sources_chain(llm, chain_type='stuff')
+chain = ConversationalRetrievalChain.from_llm(llm, retriever=retriever)
 question = st.text_input("What's your question?")
 
 if question:
-    response = chain.run(question)
-    # response = chain.run(input_documents=docs, question=question)
+    if 'history' not in st.session_state:
+        st.session_state['history'] = []
+    response = chain.run({'question': question, 'chat_history': st.session_state['history']})
+    st.session_state['history'].append((question, response))
     st.write(response)
