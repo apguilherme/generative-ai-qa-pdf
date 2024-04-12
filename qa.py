@@ -1,6 +1,8 @@
 # commands:
 
 # pip3 install -r requirements.txt
+# python3 -m venv .venv
+# source .venv/bin/activate
 # streamlit run qa.py
 
 import os
@@ -10,7 +12,7 @@ import openai
 from langchain_openai import OpenAI
 from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter 
-from langchain_openai import OpenAIEmbeddings
+from langchain_openai.embeddings.base import OpenAIEmbeddings
 from langchain_community.vectorstores import Chroma
 from langchain.chains import ConversationalRetrievalChain
 
